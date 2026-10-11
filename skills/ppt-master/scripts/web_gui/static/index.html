@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title>PPT Master · 演示工作台</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <svg class="icon-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-4 4 4-4 4 4M4 15v5h16v-5"/></symbol>
+    <symbol id="i-slides" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M12 17v4m-4 0h8M7 9h5m-5 4h9"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8l-5-5Zm0 0v6h5M9 13h6m-6 4h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6.1 6.1A8 8 0 0 1 19.6 10M4.4 14A8 8 0 0 0 18 18"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><path d="m5 6 5 6-5 6m8 0h6"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="工作台导航">
+      <a class="brand" href="/" aria-label="PPT Master 首页">
+        <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span></span>
+        <span>PPT <strong>Master</strong><small>演示工作台</small></span>
+      </a>
+      <button id="new-project" class="button primary new-project"><svg><use href="#i-plus"/></svg>新建演示</button>
+      <div class="project-list-header"><h2>我的项目</h2><span id="project-count" class="count">0</span></div>
+      <nav id="project-list" class="project-list" aria-label="已保存的项目"></nav>
+      <p id="empty-projects" class="sidebar-empty">开始你的第一份演示<br>项目会自动保存在这里</p>
+      <div class="sidebar-footer"><span class="local-dot"></span><span>本地工作空间<small>文件保存在你的电脑上</small></span></div>
+    </aside>
+
+    <main id="main" class="main">
+      <header class="topbar"><span class="breadcrumb">工作空间 <span>/</span> <span id="breadcrumb-current">新建演示</span></span><button id="engine-indicator" class="engine-indicator" title="重新检查生成引擎"><span class="status-dot checking"></span><span id="engine-label">检查引擎中</span><svg><use href="#i-refresh"/></svg></button></header>
+
+      <div id="connection-error" class="notice error" role="alert" hidden></div>
+      <section id="engine-notice" class="notice engine-notice" aria-live="polite" hidden>
+        <div><strong id="engine-notice-title">连接 Agnes 生成引擎</strong><p id="engine-notice-detail"></p><p>配置保存在本机私有设置中，更新后点击重新检查。</p></div>
+        <button id="refresh-engine" class="button secondary small"><svg><use href="#i-refresh"/></svg>重新检查</button>
+      </section>
+
+      <section id="create-view" class="view">
+        <div class="page-heading"><div class="eyebrow"><span></span> 从一个想法开始</div><h1>把想法，做成演示<span>。</span></h1><p>告诉我们你要讲什么，AI 为你完成内容、设计与排版。</p></div>
+        <div class="creation-layout">
+          <form id="create-form" class="card creation-card">
+            <div class="section-heading"><span class="section-number">01</span><h2>你想分享什么？</h2><span class="optional-label">也可以只上传资料</span></div>
+            <label class="sr-only" for="topic">演示主题与内容要求</label>
+            <textarea id="topic" name="topic" maxlength="20000" placeholder="例如：为初学者介绍数字 IC 验证，讲清验证流程、常用工具与学习路径。用于 10 分钟的技术分享。" rows="5" aria-describedby="topic-help"></textarea>
+            <div class="field-meta"><span id="topic-help">加入受众、使用场景和重点，演示会更贴合你的需求。</span><span id="topic-length">0</span></div>
+
+            <div class="section-heading second"><span class="section-number">02</span><h2>设定演示风格</h2></div>
+            <div class="form-row"><div class="field"><label for="page-count-mode">页数规划</label><select id="page-count-mode" name="page_count_mode"><option value="auto">自动规划 · 推荐</option><option value="fixed">指定页数</option><option value="range">指定范围</option></select></div><div class="field"><label for="analysis-depth">分析深度</label><select id="analysis-depth" name="analysis_depth"><option value="fast">简明 · 提炼核心内容</option><option value="normal" selected>标准 · 兼顾完整与效率</option><option value="deep">深入 · 充分分析资料</option></select></div></div>
+            <p id="page-count-help" class="planning-help">AI 根据内容在 5–30 页内自动规划结构与页数。</p>
+            <div id="fixed-pages" class="field planning-fields" hidden><label for="slides">指定页数</label><div class="number-input"><input id="slides" name="slides" type="number" min="1" max="40" value="5" disabled><span>页</span></div></div>
+            <div id="range-pages" class="form-row planning-fields" hidden><div class="field"><label for="min-pages">最少页数</label><input id="min-pages" name="min_pages" type="number" min="1" max="40" value="5" disabled></div><div class="field"><label for="max-pages">最多页数</label><input id="max-pages" name="max_pages" type="number" min="1" max="40" value="30" disabled></div></div>
+            <div class="field style-field"><label for="format">画面比例</label><select id="format" name="format"><option value="ppt169">16:9 · 宽屏</option><option value="ppt43">4:3 · 标准</option></select></div>
+            <div class="field style-field"><label for="style">设计偏好 <span>选填</span></label><input id="style" name="style" type="text" maxlength="500" placeholder="例如：简洁科技风，深蓝色，少文字、多图示"></div>
+
+            <div class="section-heading second"><span class="section-number">03</span><h2>添加参考资料</h2><span class="optional-label">选填</span></div>
+            <label id="drop-zone" class="drop-zone" for="files"><span class="upload-icon"><svg><use href="#i-upload"/></svg></span><span><strong>点击上传</strong>，或将文件拖到这里<small>文档、演示、表格与图片 · 最多 20 个，共 100 MB</small></span><input id="files" name="files" type="file" multiple accept=".pdf,.docx,.doc,.pptx,.xlsx,.xlsm,.csv,.tsv,.md,.markdown,.txt,.png,.jpg,.jpeg,.webp,.gif,.svg"></label>
+            <ul id="upload-list" class="upload-list" aria-label="已选择的参考资料"></ul>
+            <p id="form-error" class="form-error" role="alert" hidden></p>
+            <div class="form-footer"><p><span class="tiny-spark">✧</span>可编辑 PPTX · 每页附演讲备注<br><span id="engine-model">模型：agnes-2.5-flash</span></p><button id="generate" type="submit" class="button primary generate-button"><span>开始生成</span><svg><use href="#i-arrow"/></svg></button></div>
+          </form>
+
+          <aside class="creation-aside" aria-label="制作说明">
+            <div class="preview-art" aria-hidden="true"><div class="art-tag">IDEA → PRESENTATION</div><div class="art-back-sheet"></div><div class="art-sheet"><div class="art-header"><span>PPT MASTER</span><span>01 / 05</span></div><div class="art-headline">让每一个想法<br><em>清晰呈现。</em></div><div class="art-line"></div><div class="art-orbit"><span></span><span></span><span></span></div><div class="art-bottom"><span>MAKE YOUR POINT.</span><span>↗</span></div></div><div class="art-caption"><span class="caption-line"></span> 内容有逻辑，表达有设计</div></div>
+            <div class="workflow"><h2>从想法到成品</h2><ol><li><span>1</span><div><strong>梳理内容</strong><p>理解主题与材料，组织演示结构</p></div></li><li><span>2</span><div><strong>设计页面</strong><p>完成版式、配色与图文表达</p></div></li><li><span>3</span><div><strong>交付演示</strong><p>预览页面，下载可编辑的 PPTX</p></div></li></ol></div>
+            <div class="aside-note"><svg><use href="#i-clock"/></svg><p>制作通常需要数分钟。你可以留在这里查看实际进展。</p></div>
+          </aside>
+        </div>
+      </section>
+
+      <section id="project-view" class="view" hidden>
+        <div class="project-heading"><div><div class="eyebrow">你的演示项目</div><h1 id="project-title"></h1><p id="project-meta"></p></div><span id="project-status" class="status-badge"></span></div>
+        <div id="job-banner" class="job-banner" aria-live="polite"><span id="job-banner-icon" class="job-banner-icon"><svg><use href="#i-slides"/></svg></span><div><strong id="job-title"></strong><p id="job-description"></p></div><button id="cancel-job" class="button secondary small" hidden>停止制作</button><button id="retry-job" class="button primary small" hidden><svg><use href="#i-refresh"/></svg>重新生成</button></div>
+        <p id="project-error" class="notice error" role="alert" hidden></p>
+        <div class="card result-card"><div class="result-tabs" role="tablist" aria-label="项目内容"><button id="tab-outline" class="result-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-outline" tabindex="-1" data-tab="outline"><svg><use href="#i-file"/></svg>内容大纲</button><button id="tab-preview" class="result-tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-preview" data-tab="preview"><svg><use href="#i-slides"/></svg>页面预览<span id="slide-count" class="count">0</span></button><button id="tab-log" class="result-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-log" tabindex="-1" data-tab="log"><svg><use href="#i-terminal"/></svg>制作进展</button><button id="tab-files" class="result-tab" type="button" role="tab" aria-selected="false" aria-controls="panel-files" tabindex="-1" data-tab="files"><svg><use href="#i-download"/></svg>文件与下载<span id="export-count" class="count">0</span></button></div>
+          <section id="panel-outline" class="tab-panel outline-panel" role="tabpanel" aria-labelledby="tab-outline" hidden><div id="outline-empty" class="empty-state"><span class="empty-icon"><svg><use href="#i-file"/></svg></span><h2>先理解内容，再设计页面</h2><p>分析完成后，这里会显示页数规划、逐页要点与演讲备注。</p></div><div id="outline-content" hidden><div class="outline-heading"><h2 id="outline-title"></h2><span id="outline-count" class="count"></span></div><p id="outline-reason" class="outline-reason"></p><ol id="outline-list" class="outline-list"></ol></div></section>
+          <section id="panel-preview" class="tab-panel" role="tabpanel" aria-labelledby="tab-preview"><div id="preview-empty" class="empty-state"><span class="empty-icon"><svg><use href="#i-slides"/></svg></span><h2>页面将在这里呈现</h2><p>生成后，你可以逐页预览演示内容。</p><button id="see-progress" class="text-button">查看制作进展 <span>→</span></button></div><div id="slide-viewer" class="slide-viewer" hidden><div class="slide-stage"><iframe id="slide-frame" sandbox="" title="演示页面预览" referrerpolicy="no-referrer"></iframe></div><div class="slide-controls"><button id="previous-slide" class="icon-button" aria-label="上一页"><svg class="rotate"><use href="#i-chevron"/></svg></button><span id="slide-position"></span><button id="next-slide" class="icon-button" aria-label="下一页"><svg><use href="#i-chevron"/></svg></button><span id="slide-name"></span></div><div id="slide-thumbnails" class="slide-thumbnails" aria-label="选择演示页面"></div><details id="slide-notes" class="slide-notes" open hidden><summary>本页演讲备注</summary><p id="slide-notes-content"></p></details></div></section>
+          <section id="panel-log" class="tab-panel" role="tabpanel" aria-labelledby="tab-log" hidden><div class="log-heading"><span><span id="log-live-dot" class="status-dot"></span>生成引擎输出</span><span id="log-updated"></span></div><pre id="job-log" class="job-log" tabindex="0" aria-label="制作日志">项目开始制作后，实际进展会显示在这里。</pre></section>
+          <section id="panel-files" class="tab-panel files-panel" role="tabpanel" aria-labelledby="tab-files" hidden><div class="files-heading"><h2>成品文件</h2><p>下载演示文件，继续编辑或直接分享。</p></div><div id="export-list" class="export-list"></div><p id="export-empty" class="muted">导出完成后，文件会显示在这里。</p><div class="source-section"><h2>参考资料</h2><ul id="source-list" class="source-list"></ul><p id="source-empty" class="muted">这个项目没有上传参考资料。</p></div><details class="project-details"><summary>项目要求与保存位置</summary><p id="project-brief"></p><code id="project-path"></code></details></section>
+        </div>
+      </section>
+      <footer class="main-footer"><span>PPT Master</span><span>用好设计，讲好故事。</span></footer>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>
