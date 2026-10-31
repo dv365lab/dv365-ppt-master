@@ -452,6 +452,24 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _bind_server(app, preferred_port):
+    from werkzeug.serving import make_server
+
+    try:
+        port = find_free_port(preferred_port)
+    except RuntimeError:
+        # Let the OS choose a port when the preferred range is exhausted.
+        port = 0
+    try:
+        return make_server("127.0.0.1", port, app, threaded=True)
+    except SystemExit as exc:
+        # Werkzeug exits on bind errors. The probed port may have been claimed
+        # in the meantime, so retry once with an atomically assigned port.
+        if port == 0 or exc.code != 1:
+            raise
+        return make_server("127.0.0.1", 0, app, threaded=True)
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
@@ -481,14 +499,13 @@ def main(argv: list[str] | None = None) -> int:
         print("A local GUI process still owns this workspace. Close its window and retry.", file=sys.stderr)
         return 1
     try:
-        from werkzeug.serving import make_server
         app = create_app(root)
     except ImportError as exc:
         print(f'Missing dependency: {exc}. Run: "{sys.executable}" -m pip install -r '
               f'"{SKILL_DIR / "requirements.txt"}"', file=sys.stderr)
         return 1
-    port = find_free_port(args.port)
-    server = make_server("127.0.0.1", port, app, threaded=True)
+    server = _bind_server(app, args.port)
+    port = server.server_port
     if claim_lock(lock_file, port):
         server.server_close()
         print("Another GUI launch is in progress. Retry shortly.", file=sys.stderr)
